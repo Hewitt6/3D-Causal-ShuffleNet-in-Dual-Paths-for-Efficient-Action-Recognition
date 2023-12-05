@@ -2,7 +2,7 @@ from datasets.ucf101 import UCF101
 
 def get_training_set(opt, spatial_transform, temporal_transform,
                      target_transform):
-    assert opt.dataset in [ucf101']
+    assert opt.dataset in ['ucf101']
 
     
     if opt.dataset == 'ucf101':
