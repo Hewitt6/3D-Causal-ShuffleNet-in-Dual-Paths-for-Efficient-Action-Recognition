@@ -16,7 +16,9 @@ class CausalConv3d(nn.Module):
         # Zero out the weights for future time steps
         if kernel_size[0] > 1:
             self.conv.weight.data[:, :, :kernel_size[0]//2, :, :] = 0
-
+            
+    def forward(self, x):
+        return self.conv(x)
 
 def conv_bn(inp, oup, stride):
     return nn.Sequential(
