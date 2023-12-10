@@ -6,14 +6,17 @@ from torch.autograd import Variable
 class CausalConv3d(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True):
         super(CausalConv3d, self).__init__()
+
+        # Convert kernel_size to tuple if it's an int
+        if isinstance(kernel_size, int):
+            kernel_size = (kernel_size, kernel_size, kernel_size)
+
         self.conv = nn.Conv3d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias)
 
         # Zero out the weights for future time steps
         if kernel_size[0] > 1:
             self.conv.weight.data[:, :, :kernel_size[0]//2, :, :] = 0
 
-    def forward(self, x):
-        return self.conv(x)
 
 def conv_bn(inp, oup, stride):
     return nn.Sequential(
