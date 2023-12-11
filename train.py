@@ -20,10 +20,15 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
     top5 = AverageMeter()
 
     end_time = time.time()
+                  
+    if not opt.no_cuda:
+    model = model.cuda()
+
     for i, (inputs, targets) in enumerate(data_loader):
         data_time.update(time.time() - end_time)
 
         if not opt.no_cuda:
+            inputs = inputs.cuda()
             targets = targets.cuda()
         inputs = Variable(inputs)
         targets = Variable(targets)
