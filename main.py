@@ -84,7 +84,7 @@ if __name__ == '__main__':
             ToTensor(opt.norm_value), norm_method
         ])
         temporal_transform = TemporalRandomCrop(opt.sample_duration, opt.downsample)
-        if opt.model == 'slowfastshuf' or 'slowfastcausalshuf':
+        if opt.model in ['slowfastshuf', 'slowfastcausalshuf']:
             temporal_transform2 = TemporalCenterCrop(opt.sample_duration, opt.slowdownsample)
         target_transform = ClassLabel()
         training_data = get_training_set(opt, spatial_transform,
