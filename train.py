@@ -11,7 +11,7 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
                 epoch_logger, batch_logger):
     print('train at epoch {}'.format(epoch))
     if not opt.no_cuda:
-    model = model.cuda()
+        model = model.cuda()
 
     model.train()
 
