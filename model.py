@@ -1,40 +1,27 @@
 import torch
 from torch import nn
 
-from models import shufflenet, causalshuf, slowfastshuf, slowfastcausalshuf
+from models import shufflenet, causalshuf
 
 def generate_model(opt):
     assert opt.model in ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf']
 
 
     
-    if opt.model == 'shufflenet':
+    if opt.model == 'shufflenet' or 'slowfastshuf':
         from models.shufflenet import get_fine_tuning_parameters
         model = shufflenet.get_model(
             groups=opt.groups,
             width_mult=opt.width_mult,
             num_classes=opt.n_classes)
     
-    if opt.model == 'causalshuf':
+    if opt.model == 'causalshuf' or 'slowfastcausalshuf':
         from models.causalshuf import get_fine_tuning_parameters
         model = causalshuf.get_model(
             groups=opt.groups,
             width_mult=opt.width_mult,
             num_classes=opt.n_classes)
         
-    if opt.model == 'slowfastshuf':
-        from models.slowfastshuf import get_fine_tuning_parameters
-        model = slowfastshuf.get_model(
-            groups=opt.groups,
-            width_mult=opt.width_mult,
-            num_classes=opt.n_classes)
-
-    if opt.model == 'slowfastcausalshuf':
-        from models.slowfastcausalshuf import get_fine_tuning_parameters
-        model = slowfastcausalshuf.get_model(
-            groups=opt.groups,
-            width_mult=opt.width_mult,
-            num_classes=opt.n_classes)
 
     if not opt.no_cuda:
         model = model.cuda()
