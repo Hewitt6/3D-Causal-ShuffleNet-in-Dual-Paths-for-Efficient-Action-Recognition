@@ -81,6 +81,71 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
         'lr': optimizer.param_groups[0]['lr']
     })
 
+def train_epoch_slowfast(epoch, data_loader, data_loader2, model, criterion, optimizer, opt, epoch_logger, batch_logger):
+    print('train at epoch {}'.format(epoch))
+    if not opt.no_cuda:
+        model = model.cuda()
+
+    model.train()
+
+    # Initialize meters
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
+
+    end_time = time.time()
+
+    for i, ((inputs1, targets1), (inputs2, _)) in enumerate(zip(data_loader, data_loader2)):
+        data_time.update(time.time() - end_time)
+
+        # Move data to GPU if required
+        if not opt.no_cuda:
+            inputs1, targets1, inputs2 = inputs1.cuda(), targets1.cuda(), inputs2.cuda()
+        inputs1, targets1, inputs2 = Variable(inputs1), Variable(targets1), Variable(inputs2)
+
+        # Forward pass
+        outputs1 = model(inputs1)
+        outputs2 = model(inputs2)
+
+        # Concatenate outputs
+        concatenated_outputs = torch.cat((outputs1, outputs2), dim=1)
+
+        # Compute loss
+        loss = criterion(concatenated_outputs, targets1)
+
+        # Update metrics
+        losses.update(loss.data, inputs1.size(0))
+        prec1, prec5 = calculate_accuracy(concatenated_outputs.data, targets1.data, topk=(1, 5))
+        top1.update(prec1, inputs1.size(0))
+        top5.update(prec5, inputs1.size(0))
+
+        # Backpropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # Update batch time
+        batch_time.update(time.time() - end_time)
+        end_time = time.time()
+
+        # Logging
+        batch_logger.log({
+            # ... [logging details here] ...
+        })
+
+        if i % 10 == 0:
+            print('Epoch: [{0}][{1}/{2}]\t' # ... [logging details here] ...
+
+    epoch_logger.log({
+        'epoch': epoch,
+        'loss': losses.avg.item(),
+        'prec1': top1.avg.item(),
+        'prec5': top5.avg.item(),
+        'lr': optimizer.param_groups[0]['lr']
+    })
+
     #if epoch % opt.checkpoint == 0:
     #    save_file_path = os.path.join(opt.result_path,
     #                                  'save_{}.pth'.format(epoch))
