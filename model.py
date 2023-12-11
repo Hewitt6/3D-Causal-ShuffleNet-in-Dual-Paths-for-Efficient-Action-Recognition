@@ -1,10 +1,10 @@
 import torch
 from torch import nn
 
-from models import shufflenet, causalshuf
+from models import shufflenet, causalshuf, slowfastshuf, slowfastcausalshuf
 
 def generate_model(opt):
-    assert opt.model in ['shufflenet', 'causalshuf']
+    assert opt.model in ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf']
 
 
     
@@ -18,6 +18,20 @@ def generate_model(opt):
     if opt.model == 'causalshuf':
         from models.causalshuf import get_fine_tuning_parameters
         model = causalshuf.get_model(
+            groups=opt.groups,
+            width_mult=opt.width_mult,
+            num_classes=opt.n_classes)
+        
+    if opt.model == 'slowfastshuf':
+        from models.slowfastshuf import get_fine_tuning_parameters
+        model = slowfastshuf.get_model(
+            groups=opt.groups,
+            width_mult=opt.width_mult,
+            num_classes=opt.n_classes)
+
+    if opt.model == 'slowfastcausalshuf':
+        from models.slowfastcausalshuf import get_fine_tuning_parameters
+        model = slowfastcausalshuf.get_model(
             groups=opt.groups,
             width_mult=opt.width_mult,
             num_classes=opt.n_classes)
@@ -35,7 +49,7 @@ def generate_model(opt):
             assert opt.arch == pretrain['arch']
             model.load_state_dict(pretrain['state_dict'])
 
-            if opt.model in  ['shufflenet', 'causalshuf']:
+            if opt.model in  ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf']:
                 model.module.classifier = nn.Sequential(
                                 nn.Dropout(0.9),
                                 nn.Linear(model.module.classifier[1].in_features, opt.n_finetune_classes))
@@ -50,7 +64,7 @@ def generate_model(opt):
             assert opt.arch == pretrain['arch']
             model.load_state_dict(pretrain['state_dict'])
 
-            if opt.model in  ['shufflenet', 'causalshuf']:
+            if opt.model in  ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf']:
                 model.module.classifier = nn.Sequential(
                                 nn.Dropout(0.9),
                                 nn.Linear(model.module.classifier[1].in_features, opt.n_finetune_classes)
