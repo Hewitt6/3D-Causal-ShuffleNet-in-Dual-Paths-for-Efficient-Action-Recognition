@@ -10,6 +10,8 @@ from utils import *
 def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
                 epoch_logger, batch_logger):
     print('train at epoch {}'.format(epoch))
+    if not opt.no_cuda:
+    model = model.cuda()
 
     model.train()
 
@@ -21,9 +23,7 @@ def train_epoch(epoch, data_loader, model, criterion, optimizer, opt,
 
     end_time = time.time()
                   
-    if not opt.no_cuda:
-    model = model.cuda()
-
+    
     for i, (inputs, targets) in enumerate(data_loader):
         data_time.update(time.time() - end_time)
 
