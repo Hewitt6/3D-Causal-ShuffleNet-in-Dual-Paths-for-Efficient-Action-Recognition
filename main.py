@@ -89,7 +89,7 @@ if __name__ == '__main__':
         target_transform = ClassLabel()
         training_data = get_training_set(opt, spatial_transform,
                                          temporal_transform, target_transform)
-        if opt.model == 'slowfastshuf' or 'slowfastcausalshuf':
+        if opt.model in ['slowfastshuf', 'slowfastcausalshuf']:
             training_data2 = get_training_set(opt, spatial_transform,
                                          temporal_transform2, target_transform)
         train_loader = torch.utils.data.DataLoader(
@@ -98,7 +98,7 @@ if __name__ == '__main__':
             shuffle=True,
             num_workers=opt.n_threads,
             pin_memory=True)
-        if opt.model == 'slowfastshuf' or 'slowfastcausalshuf':
+        if opt.model in ['slowfastshuf', 'slowfastcausalshuf']:
             train_loader2 = torch.utils.data.DataLoader(
                 training_data2,
                 batch_size=opt.batch_size,
