@@ -132,11 +132,30 @@ def train_epoch_slowfast(epoch, data_loader, data_loader2, model, criterion, opt
 
         # Logging
         batch_logger.log({
-            # ... [logging details here] ...
+            'epoch': epoch,
+            'batch': i + 1,
+            'iter': (epoch - 1) * len(data_loader) + (i + 1),
+            'loss': losses.val.item(),
+            'prec1': top1.val.item(),
+            'prec5': top5.val.item(),
+            'lr': optimizer.param_groups[0]['lr']
         })
-
-        if i % 10 == 0:
-            print('Epoch: [{0}][{1}/{2}]\t' # ... [logging details here] ...
+        if i % 10 ==0:
+            print('Epoch: [{0}][{1}/{2}]\t lr: {lr:.5f}\t'
+                  'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                  'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
+                  'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                  'Prec@1 {top1.val:.5f} ({top1.avg:.5f})\t'
+                  'Prec@5 {top5.val:.5f} ({top5.avg:.5f})'.format(
+                      epoch,
+                      i,
+                      len(data_loader),
+                      batch_time=batch_time,
+                      data_time=data_time,
+                      loss=losses,
+                      top1=top1,
+                      top5=top5,
+                      lr=optimizer.param_groups[0]['lr']))
 
     epoch_logger.log({
         'epoch': epoch,
