@@ -84,15 +84,27 @@ if __name__ == '__main__':
             ToTensor(opt.norm_value), norm_method
         ])
         temporal_transform = TemporalRandomCrop(opt.sample_duration, opt.downsample)
+        if opt.model == 'slowfastshuf' or 'slowfastcausalshuf':
+            temporal_transform2 = TemporalCenterCrop(opt.sample_duration, opt.slowdownsample)
         target_transform = ClassLabel()
         training_data = get_training_set(opt, spatial_transform,
                                          temporal_transform, target_transform)
+        if opt.model == 'slowfastshuf' or 'slowfastcausalshuf':
+            training_data2 = get_training_set(opt, spatial_transform,
+                                         temporal_transform2, target_transform)
         train_loader = torch.utils.data.DataLoader(
             training_data,
             batch_size=opt.batch_size,
             shuffle=True,
             num_workers=opt.n_threads,
             pin_memory=True)
+        if opt.model == 'slowfastshuf' or 'slowfastcausalshuf':
+            train_loader2 = torch.utils.data.DataLoader(
+                training_data2,
+                batch_size=opt.batch_size,
+                shuffle=True,
+                num_workers=opt.n_threads,
+                pin_memory=True)
         train_logger = Logger(
             os.path.join(opt.result_path, 'train.log'),
             ['epoch', 'loss', 'prec1', 'prec5', 'lr'])
@@ -148,16 +160,28 @@ if __name__ == '__main__':
 
         if not opt.no_train:
             adjust_learning_rate(optimizer, i, opt)
-            train_epoch(i, train_loader, model, criterion, optimizer, opt,
-                        train_logger, train_batch_logger)
-            state = {
-                'epoch': i,
-                'arch': opt.arch,
-                'state_dict': model.state_dict(),
-                'optimizer': optimizer.state_dict(),
-                'best_prec1': best_prec1
-                }
-            save_checkpoint(state, False, opt)
+            if opt.model not in ['slowfastshuf', 'slowfastcausalshuf']:
+                train_epoch(i, train_loader, model, criterion, optimizer, opt,
+                            train_logger, train_batch_logger)
+                state = {
+                    'epoch': i,
+                    'arch': opt.arch,
+                    'state_dict': model.state_dict(),
+                    'optimizer': optimizer.state_dict(),
+                    'best_prec1': best_prec1
+                    }
+                save_checkpoint(state, False, opt)
+            elif opt.model in ['slowfastshuf', 'slowfastcausalshuf']:
+                train_epoch(i, train_loader, train_loader2, model, criterion, optimizer, opt,
+                            train_logger, train_batch_logger)
+                state = {
+                    'epoch': i,
+                    'arch': opt.arch,
+                    'state_dict': model.state_dict(),
+                    'optimizer': optimizer.state_dict(),
+                    'best_prec1': best_prec1
+                    }
+                save_checkpoint(state, False, opt)
             
         if not opt.no_val:
             validation_loss, prec1 = val_epoch(i, val_loader, model, criterion, opt,
