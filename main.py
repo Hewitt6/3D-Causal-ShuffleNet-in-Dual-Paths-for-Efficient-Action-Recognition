@@ -172,7 +172,7 @@ if __name__ == '__main__':
                     }
                 save_checkpoint(state, False, opt)
             elif opt.model in ['slowfastshuf', 'slowfastcausalshuf']:
-                train_epoch(i, train_loader, train_loader2, model, criterion, optimizer, opt,
+                train_epoch_slowfast(i, train_loader, train_loader2, model, criterion, optimizer, opt,
                             train_logger, train_batch_logger)
                 state = {
                     'epoch': i,
