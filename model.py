@@ -8,14 +8,14 @@ def generate_model(opt):
 
 
     
-    if opt.model == 'shufflenet' or 'slowfastshuf':
+    if opt.model in ['shufflenet', 'slowfastshuf']:
         from models.shufflenet import get_fine_tuning_parameters
         model = shufflenet.get_model(
             groups=opt.groups,
             width_mult=opt.width_mult,
             num_classes=opt.n_classes)
     
-    if opt.model == 'causalshuf' or 'slowfastcausalshuf':
+    if opt.model in ['causalshuf', 'slowfastcausalshuf']:
         from models.causalshuf import get_fine_tuning_parameters
         model = causalshuf.get_model(
             groups=opt.groups,
