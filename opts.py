@@ -15,6 +15,7 @@ def parse_opts():
     parser.add_argument('--sample_size', default=112, type=int, help='Height and width of inputs')
     parser.add_argument('--sample_duration', default=16, type=int, help='Temporal duration of inputs')
     parser.add_argument('--downsample', default=1, type=int, help='Downsampling. Selecting 1 frame out of N')
+    parser.add_argument('--slowdownsample', default=4, type=int, help='Downsampling. Selecting 4 frame out of N')
     parser.add_argument('--initial_scale', default=1.0, type=float, help='Initial scale for multiscale cropping')
     parser.add_argument('--n_scales', default=5, type=int, help='Number of scales for multiscale cropping')
     parser.add_argument('--scale_step', default=0.84089641525, type=float, help='Scale step for multiscale cropping')
