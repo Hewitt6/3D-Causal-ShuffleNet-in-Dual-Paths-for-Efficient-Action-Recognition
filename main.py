@@ -16,7 +16,7 @@ from target_transforms import ClassLabel, VideoID
 from target_transforms import Compose as TargetCompose
 from dataset import get_training_set, get_validation_set, get_test_set
 from utils import *
-from train import train_epoch
+from train import train_epoch, train_epoch_slowfast
 from validation import val_epoch
 import test
 
