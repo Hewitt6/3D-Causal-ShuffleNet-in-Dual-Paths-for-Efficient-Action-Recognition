@@ -50,7 +50,7 @@ def generate_model(opt):
             assert opt.arch == pretrain['arch']
             model.load_state_dict(pretrain['state_dict'])
 
-            if opt.model in  ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf']:
+            if opt.model in  ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf', 'causalshuf_dep', 'twowayshuf']:
                 model.module.classifier = nn.Sequential(
                                 nn.Dropout(0.9),
                                 nn.Linear(model.module.classifier[1].in_features, opt.n_finetune_classes))
@@ -65,7 +65,7 @@ def generate_model(opt):
             assert opt.arch == pretrain['arch']
             model.load_state_dict(pretrain['state_dict'])
 
-            if opt.model in  ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf']:
+            if opt.model in  ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf', 'causalshuf_dep', 'twowayshuf']:
                 model.module.classifier = nn.Sequential(
                                 nn.Dropout(0.9),
                                 nn.Linear(model.module.classifier[1].in_features, opt.n_finetune_classes)
