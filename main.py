@@ -16,8 +16,8 @@ from target_transforms import ClassLabel, VideoID
 from target_transforms import Compose as TargetCompose
 from dataset import get_training_set, get_validation_set, get_test_set
 from utils import *
-from train import train_epoch, train_epoch_slowfast
-from validation import val_epoch
+from train import train_epoch, train_epoch_slowfast, train_epoch_twoway
+from validation import val_epoch, val_epoch_twoway
 import test
 
 
@@ -182,10 +182,24 @@ if __name__ == '__main__':
                     'best_prec1': best_prec1
                     }
                 save_checkpoint(state, False, opt)
+            elif opt.model == "causalsuf":
+                train_epoch_twoway(i, train_loader, model, criterion, optimizer, opt,
+                            train_logger, train_batch_logger)
+                state = {
+                    'epoch': i,
+                    'arch': opt.arch,
+                    'state_dict': model.state_dict(),
+                    'optimizer': optimizer.state_dict(),
+                    'best_prec1': best_prec1
+                    }
             
         if not opt.no_val:
-            validation_loss, prec1 = val_epoch(i, val_loader, model, criterion, opt,
-                                        val_logger)
+            if opt.model != "causalsuf":
+                validation_loss, prec1 = val_epoch(i, val_loader, model, criterion, opt,
+                                            val_logger)
+            else:
+                validation_loss, prec1 = val_epoch_twoway(i, val_loader, model, criterion, opt,
+                                            val_logger)
             is_best = prec1 > best_prec1
             best_prec1 = max(prec1, best_prec1)
             state = {
@@ -216,7 +230,10 @@ if __name__ == '__main__':
             shuffle=False,
             num_workers=opt.n_threads,
             pin_memory=True)
-        test.test(test_loader, model, opt, test_data.class_names)
+        if opt.model != "causalsuf":
+            test.test(test_loader, model, opt, test_data.class_names)
+        else:
+            test.test_twoway(test_loader, model, opt, test_data.class_names)
 
 
 
