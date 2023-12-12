@@ -1,10 +1,10 @@
 import torch
 from torch import nn
 
-from models import shufflenet, causalshuf
+from models import shufflenet, causalshuf, causalshuf_dep, twowayshuf
 
 def generate_model(opt):
-    assert opt.model in ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf']
+    assert opt.model in ['shufflenet', 'causalshuf', 'slowfastshuf', 'slowfastcausalshuf', 'causalshuf_dep', 'twowayshuf']
 
 
     
@@ -21,8 +21,22 @@ def generate_model(opt):
             groups=opt.groups,
             width_mult=opt.width_mult,
             num_classes=opt.n_classes)
-        
 
+    if opt.model == 'causalshuf_dep':
+        from models.causalshuf_dep import get_fine_tuning_parameters
+        model = causalshuf_dep.get_model(
+            groups=opt.groups,
+            width_mult=opt.width_mult,
+            num_classes=opt.n_classes)
+
+    if opt.model == 'twowayshuf':
+        from models.twowayshuf import get_fine_tuning_parameters
+        model = twowayshuf.get_model(
+            groups=opt.groups,
+            width_mult=opt.width_mult,
+            num_classes=opt.n_classes)
+
+    
     if not opt.no_cuda:
         model = model.cuda()
         model = nn.DataParallel(model, device_ids=None)
