@@ -1,3 +1,38 @@
+## Guidance to use
+If you are using colab, you should firstly clone this repository:
+```python
+!rm -rf /content/3D-Causal-ShuffleNet-in-Dual-Paths-for-Efficient-Action-Recognition
+!git clone https://github.com/Hewitt6/3D-Causal-ShuffleNet-in-Dual-Paths-for-Efficient-Action-Recognition.git
+```
+Then download the ucf101 dataset from its website
+```python
+!wget --no-check-certificate https://www.crcv.ucf.edu/data/UCF101/UCF101.rar
+!unrar x -Y UCF101.rar
+```
+Next, you need to extract frames in jpg from the avi videos and creat a n_frames files for each directories:
+```python
+!mkdir jpg
+!python /content/3D-Causal-ShuffleNet-in-Dual-Paths-for-Efficient-Action-Recognition/utils/video_jpg_ucf101_hmdb51.py /content/UCF-101 /content/jpg
+!python /content/3D-Causal-ShuffleNet-in-Dual-Paths-for-Efficient-Action-Recognition/utils/n_frames_ucf101_hmdb51.py /content/jpg
+```
+Now you can start training the model. There are three recommended options for models shufflenet, causalshuf(our best model) and twowayshuf. slowfastshuf, slowfastcausalshuf are also available implementations, but not recommended.
+```
+!python /content/3D-Causal-ShuffleNet-in-Dual-Paths-for-Efficient-Action-Recognition/main.py --root_path ~/ \
+	--video_path /content/jpg \
+	--annotation_path /content/3D-Causal-ShuffleNet-in-Dual-Paths-for-Efficient-Action-Recognition/annotation_UCF101/ucf101_01.json \
+	--result_path /content/3D-Causal-ShuffleNet-in-Dual-Paths-for-Efficient-Action-Recognition/results \
+	--dataset ucf101 \
+	--n_classes 101 \
+	--model causalshuf \
+	--width_mult 0.5 \
+	--train_crop random \
+	--learning_rate 0.1 \
+	--sample_duration 32 \
+	--downsample 1 \
+	--batch_size 16 \
+	--n_threads 16 \
+	--n_val_samples 1 
+```
 ## Architecture
 ```python
 TwoPathwayShuffleNet(
