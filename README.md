@@ -1,5 +1,5 @@
 ## Architecture
-
+```python
 TwoPathwayShuffleNet(
   (slow_conv): Sequential(
     (0): Conv3d(3, 24, kernel_size=(2, 3, 3), stride=(1, 2, 2), padding=(0, 1, 1), bias=False)
@@ -330,3 +330,4 @@ TwoPathwayShuffleNet(
 )
 Total number of trainable parameters:  613661
 Total number of FLOPs:  110313640.0
+```
